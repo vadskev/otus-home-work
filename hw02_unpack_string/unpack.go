@@ -10,7 +10,6 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(line string) (string, error) {
-
 	if _, err := strconv.Atoi(line); err == nil {
 		return "", ErrInvalidString
 	}
@@ -19,7 +18,6 @@ func Unpack(line string) (string, error) {
 	var beforeChar rune
 
 	for key, lineItem := range line {
-
 		if key == 0 && unicode.IsDigit(lineItem) {
 			return "", ErrInvalidString
 		}
