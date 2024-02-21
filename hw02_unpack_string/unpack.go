@@ -13,6 +13,9 @@ func Unpack(line string) (string, error) {
 	if _, err := strconv.Atoi(line); err == nil {
 		return "", ErrInvalidString
 	}
+	if len(line) == 0 {
+		return "", nil
+	}
 
 	var bufChars, tmpChars strings.Builder
 	var beforeChar rune
@@ -37,25 +40,17 @@ func Unpack(line string) (string, error) {
 				return "", ErrInvalidString
 			}
 		} else {
-			numRepeat, err := strconv.Atoi(tmpChars.String())
-			if err != nil {
-				return "", ErrInvalidString
-			}
-
-			if numRepeat > 0 && beforeChar > 0 {
+			if numRepeat, err := strconv.Atoi(tmpChars.String()); err == nil && numRepeat > 0 && beforeChar > 0 {
 				bufChars.WriteString(strings.Repeat(string(beforeChar), numRepeat-1))
 				tmpChars.Reset()
 			}
+
 			bufChars.WriteRune(lineItem)
 			beforeChar = lineItem
 		}
 	}
 
-	numRepeat, err := strconv.Atoi(tmpChars.String())
-	if err != nil {
-		return "", ErrInvalidString
-	}
-	if numRepeat > 0 && beforeChar > 0 {
+	if numRepeat, err := strconv.Atoi(tmpChars.String()); err == nil && numRepeat > 0 && beforeChar > 0 {
 		bufChars.WriteString(strings.Repeat(string(beforeChar), numRepeat-1))
 	}
 
