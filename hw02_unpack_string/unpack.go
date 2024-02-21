@@ -14,34 +14,56 @@ func Unpack(line string) (string, error) {
 		return "", ErrInvalidString
 	}
 
-	var bufChars strings.Builder
+	var bufChars, tmpChars strings.Builder
 	var beforeChar rune
+	var isBackslash bool
 
-	for key, lineItem := range line {
-		if key == 0 && unicode.IsDigit(lineItem) {
-			return "", ErrInvalidString
+	for _, lineItem := range line {
+		if lineItem == '\\' && !isBackslash {
+			isBackslash = true
+			continue
 		}
-
-		if unicode.IsDigit(beforeChar) && unicode.IsDigit(lineItem) {
-			return "", ErrInvalidString
+		if isBackslash {
+			bufChars.WriteRune(lineItem)
+			beforeChar = lineItem
+			isBackslash = false
+			continue
 		}
 
 		if unicode.IsDigit(lineItem) {
-			numRepeat, _ := strconv.Atoi(string(lineItem))
-			if numRepeat != 0 {
-				repeatLine := strings.Repeat(string(beforeChar), numRepeat-1)
-				bufChars.WriteString(repeatLine)
+			if beforeChar > 0 {
+				tmpChars.WriteRune(lineItem)
 			} else {
-				tmpStr := bufChars.String()
-				tmpStr = tmpStr[:len(tmpStr)-1]
-				bufChars.Reset()
-				bufChars.WriteString(tmpStr)
+				return "", ErrInvalidString
 			}
 		} else {
-			bufChars.WriteRune(lineItem)
-		}
+			numRepeat, err := strconv.Atoi(tmpChars.String())
+			if err != nil {
+				return "", ErrInvalidString
+			}
 
-		beforeChar = lineItem
+			if numRepeat > 0 && beforeChar > 0 {
+				bufChars.WriteString(strings.Repeat(string(beforeChar), numRepeat-1))
+				tmpChars.Reset()
+			}
+			bufChars.WriteRune(lineItem)
+			beforeChar = lineItem
+		}
 	}
-	return bufChars.String(), nil
+
+	numRepeat, err := strconv.Atoi(tmpChars.String())
+	if err != nil {
+		return "", ErrInvalidString
+	}
+	if numRepeat > 0 && beforeChar > 0 {
+		bufChars.WriteString(strings.Repeat(string(beforeChar), numRepeat-1))
+	}
+
+	res := bufChars.String()
+
+	if len(res) > 0 {
+		return bufChars.String(), nil
+	} else {
+		return "", ErrInvalidString
+	}
 }
