@@ -1,46 +1,51 @@
 package hw03frequencyanalysis
 
 import (
-	"fmt"
 	"regexp"
 	"sort"
 	"strings"
 )
 
-func Top10(line string) []string {
+type Words struct {
+	word      string
+	frequency int
+}
 
-	line = regexp.MustCompile(`[\.\,\"\;\:\!]`).ReplaceAllString(line, "")
+func Top10(line string) []string {
+	regTemplate := regexp.MustCompile(`([\.\,\"\;\:\!]+)|(-$)`)
+
+	line = regTemplate.ReplaceAllString(line, "")
 	splitLine := strings.Fields(line)
+	if len(splitLine) == 1 {
+		return splitLine
+	}
 
 	wordsBase := make(map[string]int, len(splitLine))
-
-	for i := 0; i < len(splitLine); i++ {
-		if value, ok := wordsBase[splitLine[i]]; ok {
-			wordsBase[splitLine[i]] = value + 1
-		} else {
-			wordsBase[splitLine[i]] = 1
+	for _, value := range splitLine {
+		words := regTemplate.ReplaceAllString(value, "")
+		if words != "" {
+			wordsBase[strings.ToLower(words)]++
 		}
 	}
 
-	keys := make([]string, 0, len(wordsBase))
-	for k := range wordsBase {
-		keys = append(keys, k)
+	wordsBaseRes := make([]Words, 0, len(wordsBase))
+	for key, value := range wordsBase {
+		wordsBaseRes = append(wordsBaseRes, Words{key, value})
 	}
 
-	sort.SliceStable(keys, func(i, j int) bool {
-		return wordsBase[keys[i]] > wordsBase[keys[j]]
+	sort.SliceStable(wordsBaseRes, func(i, j int) bool {
+		if wordsBaseRes[i].frequency < wordsBaseRes[j].frequency {
+			return false
+		}
+		if wordsBaseRes[i].frequency > wordsBaseRes[j].frequency {
+			return true
+		}
+		return strings.Compare(wordsBaseRes[i].word, wordsBaseRes[j].word) == -1
 	})
 
-	resString := make([]string, 0)
-	count := 10
-	for _, k := range keys {
-		if count != 0 {
-			resString = append(resString, k)
-			fmt.Println(k, wordsBase[k])
-			count--
-		} else {
-			break
-		}
+	resString := make([]string, 0, 10)
+	for i := 0; i < len(wordsBaseRes) && i < 10; i++ {
+		resString = append(resString, wordsBaseRes[i].word)
 	}
 
 	return resString
