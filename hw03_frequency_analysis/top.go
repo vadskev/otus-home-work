@@ -11,9 +11,9 @@ type Words struct {
 	frequency int
 }
 
-func Top10(line string) []string {
-	regTemplate := regexp.MustCompile(`([\.\,\"\;\:\!]+)|(-$)`)
+var regTemplate = regexp.MustCompile(`([\.\,\"\;\:\!\-]+)|(-$)`)
 
+func Top10(line string) []string {
 	line = regTemplate.ReplaceAllString(line, "")
 	splitLine := strings.Fields(line)
 	if len(splitLine) == 1 {
@@ -22,9 +22,8 @@ func Top10(line string) []string {
 
 	wordsBase := make(map[string]int, len(splitLine))
 	for _, value := range splitLine {
-		words := regTemplate.ReplaceAllString(value, "")
-		if words != "" {
-			wordsBase[strings.ToLower(words)]++
+		if value != "" {
+			wordsBase[strings.ToLower(value)]++
 		}
 	}
 
