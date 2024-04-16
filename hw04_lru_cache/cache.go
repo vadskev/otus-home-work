@@ -31,8 +31,8 @@ func (cache *lruCache) Set(key Key, value interface{}) bool {
 	defer cache.mutex.Unlock()
 
 	if cachedValue, isExistCache := cache.items[key]; isExistCache {
-		cachedValue.Value = value
 		cache.queue.MoveToFront(cachedValue)
+		cachedValue.Value = nItem
 		return true
 	}
 
