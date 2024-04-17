@@ -79,4 +79,62 @@ func TestTop10(t *testing.T) {
 			require.Equal(t, expected, Top10(text))
 		}
 	})
+
+	/**/
+	t.Run("Test 1", func(t *testing.T) {
+		expected := []string{
+			"steel", // 3
+			"dog",   // 2
+			"ice",   // 2
+			"sea",   // 2
+			"and",   // 1
+			"ices",  // 1
+		}
+		require.Equal(t, expected, Top10("steel dog, sea ice Sea steel - dog, ices and steel ice -"))
+	})
+
+	t.Run("Test 2", func(t *testing.T) {
+		expected := []string{
+			"музыка",  // 3
+			"человек", // 3
+			"крошка",  // 2
+			"eng",     // 1
+			"man",     // 1
+		}
+		require.Equal(t, expected, Top10("  человек     крошка человек,  -  крошка человек, музыка музыка    eng музыка     man"))
+	})
+
+	t.Run("Test 3", func(t *testing.T) {
+		expected := []string{
+			"крошка", // 3
+			"道",      // 3
+			"чип",    // 2
+			"and",    // 1
+			"man",    // 1
+		}
+		require.Equal(t, expected, Top10("чип and крошка, 道 крошка, 道 чип 道 крошка man"))
+	})
+
+	t.Run("Test 4", func(t *testing.T) {
+		expected := []string{
+			"🦸",    // 4
+			"👨",    // 3
+			"тест", // 1
+		}
+		require.Equal(t, expected, Top10("👨 🦸 - 👨, 👨 🦸 🦸 тест 🦸"))
+	})
+
+	t.Run("Test 5", func(t *testing.T) {
+		expected := []string{
+			"12",     // 3
+			"или",    // 2
+			"444",    // 1
+			"даже",   // 1
+			"если",   // 1
+			"кофе",   // 1
+			"потому", // 1
+			"слова",  // 1
+		}
+		require.Equal(t, expected, Top10("слова, кофе если даже 444 или 12, потому 12 или 12"))
+	})
 }
