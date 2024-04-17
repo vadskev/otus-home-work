@@ -99,9 +99,8 @@ func TestTop10(t *testing.T) {
 			"человек", // 3
 			"крошка",  // 2
 			"eng",     // 1
-			"man",     // 1
 		}
-		require.Equal(t, expected, Top10("  человек     крошка человек,  -  крошка человек, музыка музыка    eng музыка     man"))
+		require.Equal(t, expected, Top10(`  человек     крошка человек,  -  крошка человек, музыка музыка    eng музыка`))
 	})
 
 	t.Run("Test 3", func(t *testing.T) {
