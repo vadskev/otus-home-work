@@ -84,7 +84,6 @@ func TestCache(t *testing.T) {
 		val, ok = c.Get("ccc")
 		require.False(t, ok)
 		require.Equal(t, nil, val)
-
 	})
 }
 
