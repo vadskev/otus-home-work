@@ -60,10 +60,9 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 func writeProgress(inputFile *os.File, finalFile *os.File, fileSize int64) error {
 	var progressBar *pb.ProgressBar
 	ioWriter := io.Writer(finalFile)
-	ioReader := io.Reader(inputFile)
 
 	progressBar = pb.StartNew(int(fileSize))
-	ioReader = progressBar.NewProxyReader(inputFile)
+	ioReader := progressBar.NewProxyReader(inputFile)
 
 	_, err := io.CopyN(ioWriter, ioReader, fileSize)
 	if err != nil {
