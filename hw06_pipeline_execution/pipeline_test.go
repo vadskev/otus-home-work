@@ -90,4 +90,21 @@ func TestPipeline(t *testing.T) {
 		require.Len(t, result, 0)
 		require.Less(t, int64(elapsed), int64(abortDur)+int64(fault))
 	})
+
+	t.Run("start done", func(t *testing.T) {
+		in := make(Bi)
+		done := make(Bi)
+		close(done)
+
+		result := make([]string, 0, 50)
+		start := time.Now()
+
+		for s := range ExecutePipeline(in, done, stages...) {
+			result = append(result, s.(string))
+		}
+		passed := time.Since(start)
+
+		require.Equal(t, []string{}, result)
+		require.Less(t, int32(passed), int32(fault))
+	})
 }
